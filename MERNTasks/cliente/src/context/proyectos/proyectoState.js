@@ -1,9 +1,11 @@
 import React, {useReducer} from 'react';
+import uuid from 'uuid';
 import proyectoContext from './proyectoContext';
 import proyectoReducer from './proyectoReducer';
 import {
     FORMULARIO_PROYECTO, 
-    OBTENER_PROYECTOS
+    OBTENER_PROYECTOS,
+    AGREGAR_PROYECTO
 } from '../../types';
 
 const ProyectoState = props => {
@@ -36,6 +38,11 @@ const ProyectoState = props => {
             type: OBTENER_PROYECTOS,
             payload: proyectos
         })
+    }
+
+    // Agregar nuevo proyecto
+    const agregarProyecto = proyecto => {
+        proyecto.id = uuid.v4()
     }
 
     return(

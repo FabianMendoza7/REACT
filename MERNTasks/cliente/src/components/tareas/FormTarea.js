@@ -1,35 +1,47 @@
-import React, {useContext, useState} from 'react';
-import ProyectoContext from '../../context/proyectos/proyectoContext';
+import React, { useContext, useState, useEffect } from 'react';  
+import proyectoContext from '../../context/proyectos/proyectoContext';
 import tareaContext from '../../context/tareas/tareaContext';
 
 const FormTarea = () => {
-    // Extraer si un proyecto está activo
-    const proyectosContext = useContext(ProyectoContext);
-    const {proyecto} = proyectosContext;
-    
-    // Obtener la función del context de tarea
+
+    // Extrar si un proyecto esta activo
+    const proyectosContext = useContext(proyectoContext);
+    const { proyecto } = proyectosContext;
+
+    // obtener la función del context de tarea
     const tareasContext = useContext(tareaContext);
-    const {agregarTareas, validarTarea, errorTarea, obtenerTareas} = tareasContext;    
+    const { tareaseleccionada,  errortarea, agregarTarea, validarTarea, obtenerTareas, actualizarTarea, limpiarTarea } = tareasContext;
+
+    // Effect que detecta si hay una tarea seleccionada
+    useEffect(() => {
+        if(tareaseleccionada !== null) {
+            guardarTarea(tareaseleccionada)
+        } else {
+            guardarTarea({
+                nombre: ''
+            })
+        }
+    }, [  tareaseleccionada]); 
 
     // State del formulario
     const [tarea, guardarTarea] = useState({
         nombre: ''
-    });
+    })
 
-    // Extraer el nombre del proyecto
-    const {nombre} = tarea;
+    // extraer el nombre del proyecto
+    const { nombre } = tarea;
 
     // Si no hay proyecto seleccionado
     if(!proyecto) return null;
 
-    // Array destructoring para extraer el proyecto actual
-    const [proyectoActual] = proyecto;
+    // Array destructuring para extraer el proyecto actual
+    const [proyectoActual] =  proyecto;
 
     // Leer los valores del formulario
     const handleChange = e => {
         guardarTarea({
             ...tarea,
-            [e.target.name]: e.target.value
+            [e.target.name] : e.target.value
         })
     }
 
@@ -37,23 +49,30 @@ const FormTarea = () => {
         e.preventDefault();
 
         // validar
-        if(nombre.trim() === ''){
+        if(nombre.trim() === '' ) {
             validarTarea();
             return;
         }
 
-        // agregar la nueva tarea al state de tareas
-        tarea.proyectoId = proyectoActual.id;
-        tarea.estado = false;
-        agregarTareas(tarea);
+        // Si es edición o si es nueva tarea
+        if(tareaseleccionada === null ) {
+            // agregar la nueva tarea al state de tareas
+            tarea.proyecto = proyectoActual._id;
+            agregarTarea(tarea);
+        } else {
+            // actualizar tarea existente
+            actualizarTarea(tarea);
 
+            // Elimina tareaseleccionada del state
+            limpiarTarea();
+        }
         // Obtener y filtrar las tareas del proyecto actual
         obtenerTareas(proyectoActual.id);
 
         // reiniciar el form
         guardarTarea({
             nombre: ''
-        });
+        })
     }
 
     return ( 
@@ -73,17 +92,15 @@ const FormTarea = () => {
                 </div>
 
                 <div className="contenedor-input">
-                    <input
-                        tupe="submit"
+                    <input 
+                        type="submit"
                         className="btn btn-primario btn-submit btn-block"
-                        value="Agregar Tarea"
+                        value={tareaseleccionada ? 'Editar Tarea' : 'Agregar Tarea'}
                     />
                 </div>
             </form>
 
-            {errorTarea 
-                ? <p className="mensaje error">El nombre de la tarea es obligatorio</p>
-                : null}
+            {errortarea ? <p className="mensaje error">El nombre de la tarea es obligatorio</p> : null }
         </div>
      );
 }

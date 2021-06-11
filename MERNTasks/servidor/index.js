@@ -10,6 +10,9 @@ conectarDB();
 // Puerto de la app.
 const PORT = process.env.PORT || 4000;
 
+// Importar rutas
+app.use('/api/usuarios', require('./routes/usuarios'));
+
 // Definir la página ppal.
 app.get('/', (req, res) => {
     res.send('Hola Mundo');

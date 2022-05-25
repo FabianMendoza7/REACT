@@ -1,4 +1,5 @@
-import { useState, useEffect, useReducer, useMemo, useRef } from 'react'
+import { useState, useEffect, useReducer, useMemo, useRef, useCallback } from 'react'
+import Search from './Search';
 
 const initialState = {
     favorites: []
@@ -43,11 +44,17 @@ const Characters = () =>
     //     setSearch(event.target.value);
     // }
 
-    //Usando useRef:
-    const handleSearch = () =>
+    // Usando useRef:
+    // const handleSearch = () =>
+    // {
+    //     setSearch(searchInput.current.value);
+    // }
+
+    // Usando useRef and useCallback()
+    const handleSearch = useCallback(() =>
     {
         setSearch(searchInput.current.value);
-    }
+    }, [])
 
     // Antes de memoizar:
     // const filteredUsers = characters.filter((user) =>
@@ -75,9 +82,14 @@ const Characters = () =>
                 ))
             }
 
-            <div className="Search">
+            {/*
+            Antes de usar useCallback()
+             <div className="Search">
                 <input type="text" value={search} ref={searchInput} onChange={handleSearch} />
-            </div>
+            </div> */}
+
+            {/* Usando useCallback() */}
+            <Search search={search} searchInput={searchInput} handleSearch={handleSearch} />
 
             {
                 filteredUsers.map(character => (

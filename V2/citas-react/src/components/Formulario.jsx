@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import Error from './Error'
 
-const Formulario = ({ pacientes, setPacientes }) =>
+const Formulario = ({ pacientes, setPacientes, paciente }) =>
 {
     const [nombre, setNombre] = useState('');
     const [propietario, setPropietario] = useState('');
@@ -9,6 +9,17 @@ const Formulario = ({ pacientes, setPacientes }) =>
     const [fecha, setFecha] = useState('');
     const [sintomas, setSintomas] = useState('');
     const [error, setError] = useState(false);
+    
+    useEffect(() => {
+        if(Object.keys(paciente).length > 0){
+            setNombre(paciente.nombre);
+            setPropietario(paciente.propietario);
+            setEmail(paciente.email);
+            setFecha(paciente.fecha);
+            setSintomas(paciente.sintomas);
+        } 
+    }, [paciente]);
+
     const generarId = () => {
         const random = Math.random().toString(36).substring(2);
         const fecha = Date.now().toString(36);
@@ -76,7 +87,7 @@ const Formulario = ({ pacientes, setPacientes }) =>
                     <input
                         id="mascota"
                         type="text"
-                        placeHolder="Nombre de la mascota"
+                        placeholder="Nombre de la mascota"
                         className="border-2 w-full p-2 mt-2 placeholder-gray-600 rounded-md"
                         value={nombre}
                         onChange={(e) => setNombre(e.target.value)}
@@ -89,7 +100,7 @@ const Formulario = ({ pacientes, setPacientes }) =>
                     <input
                         id="propietario"
                         type="text"
-                        placeHolder="Nombre del Propietario"
+                        placeholder="Nombre del Propietario"
                         className="border-2 w-full p-2 mt-2 placeholder-gray-600 rounded-md"
                         value={propietario}
                         onChange={(e) => setPropietario(e.target.value)}
@@ -102,7 +113,7 @@ const Formulario = ({ pacientes, setPacientes }) =>
                     <input
                         id="email"
                         type="email"
-                        placeHolder="Email Contacto Propietario"
+                        placeholder="Email Contacto Propietario"
                         className="border-2 w-full p-2 mt-2 placeholder-gray-600 rounded-md"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
@@ -127,17 +138,18 @@ const Formulario = ({ pacientes, setPacientes }) =>
                     <textarea
                         id="sintomas"
                         className="border-2 w-full p-2 mt-2 placeholder-gray-600 rounded-md"
-                        placeHolder="Describe los Síntomas"
+                        placeholder="Describe los Síntomas"
                         value={sintomas}
                         onChange={(e) => setSintomas(e.target.value)}
                     />
                 </div>
-
-                <input
-                    type="submit"
-                    className="bg-indigo-600 w-full p-3 text-white uppercase font-bold hover:bg-indigo-700 cursor-pointer transition-all"
-                    value="Agregar Paciente"
-                />
+                <div className="mb-5 ml-5 mr-5">
+                    <input
+                        type="submit"
+                        className="bg-indigo-600 w-full p-3 text-white uppercase font-bold hover:bg-indigo-700 cursor-pointer transition-all rounded-md"
+                        value="Agregar Paciente"
+                    />
+                </div>
             </form>
         </div>
     )

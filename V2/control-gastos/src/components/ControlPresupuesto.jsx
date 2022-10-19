@@ -16,13 +16,13 @@ const ControlPresupuesto = ({presupuesto}) => {
 
             <div className="contenido-presupuesto">
                 <p>
-                    <pan>Presupuesto: </pan> {formatearCantidad(presupuesto)}
+                    <span>Presupuesto: </span> {formatearCantidad(presupuesto)}
                 </p>
                 <p>
-                    <pan>Disponible: </pan> {formatearCantidad(presupuesto)}
+                    <span>Disponible: </span> {formatearCantidad(presupuesto)}
                 </p>
                 <p>
-                    <pan>Gastado: </pan> {formatearCantidad(presupuesto)}
+                    <span>Gastado: </span> {formatearCantidad(presupuesto)}
                 </p>
             </div>                     
         </div>

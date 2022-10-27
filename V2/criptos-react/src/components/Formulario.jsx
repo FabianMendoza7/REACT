@@ -1,6 +1,7 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import useSelectMonedas from '../hooks/useSelectMonedas'
 import { monedas } from '../data/monedas.js'
+import Error from './Error'
 import styled from '@emotion/styled'
 
 const InputSubmit = styled.input`
@@ -22,7 +23,10 @@ const InputSubmit = styled.input`
 `
 
 const Formulario = () => {
+  const [ error, setError ] = useState(false)
+  const [ criptos, setCriptos ] = useState()
   const [ moneda, SelectMonedas ] = useSelectMonedas('Elige tu Moneda', monedas)
+  const [ criptoMoneda, SelectCriptoMonedas ] = useSelectMonedas('Elige tu Criptomoneda', criptos)
   
   useEffect(() => {
     const consultarAPI = async () => {
@@ -30,20 +34,47 @@ const Formulario = () => {
 
       const respuesta = await fetch(url);
       const resultado = await respuesta.json()
-      console.log(resultado)
+      const arrayCriptos = resultado.Data.map(cripto => {
+        const objeto = {
+          id: cripto.CoinInfo.Name,
+          nombre: cripto.CoinInfo.FullName
+        }
+
+        return objeto
+      })
+      console.log("arrayCriptos:", arrayCriptos)
+      setCriptos(arrayCriptos)
     }
+
     consultarAPI();
   }, [])
 
-  return (
-    <form>
-        <SelectMonedas />
+  const handleSubmit = e => {
+    e.preventDefault();
 
-        <InputSubmit 
-            type="submit"
-            value="Cotizar"
-        />
-    </form>
+    if([moneda, criptoMoneda].includes('')){
+      setError(true);
+      return;
+    }
+
+    setError(false);
+  }
+
+  return (
+    <>
+      {error && <Error>Todos los campos son requeridos</Error>}
+      <form
+        onSubmit={handleSubmit}
+      >
+          <SelectMonedas />
+          <SelectCriptoMonedas />
+
+          <InputSubmit 
+              type="submit"
+              value="Cotizar"
+          />
+      </form>
+    </>
   )
 }
 

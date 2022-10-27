@@ -18,6 +18,7 @@ const Select = styled.select`
 
 const useSelectMonedas = (label, opciones) => {
     const [state, setState] = useState('')
+    opciones = opciones??[]
 
     const SelectMonedas = () => (
         <>

@@ -5,12 +5,19 @@ import Error from '../components/Error';
 export async function action({request}){
   const formData = await request.formData()
   const datos = Object.fromEntries(formData)
+  const email = formData.get('email')
 
   // Validación.
   const errores = []
   if(Object.values(datos).includes(''))
   {
     errores.push('Todos los campos son obligatorios')
+  }
+
+  let regex = new RegExp("([!#-'*+/-9=?A-Z^-~-]+(\.[!#-'*+/-9=?A-Z^-~-]+)*|\"\(\[\]!#-[^-~ \t]|(\\[\t -~]))+\")@([!#-'*+/-9=?A-Z^-~-]+(\.[!#-'*+/-9=?A-Z^-~-]+)*|\[[\t -Z^-~]*])");
+
+  if(!regex.test(email)){
+    errores.push('El email no es válido')
   }
 
   // Retornar datos si hay errores.
@@ -23,6 +30,8 @@ const NuevoCliente = () =>
 {
   const navigate = useNavigate();
   const errores = useActionData();
+
+
 
   return (
     <>
@@ -50,8 +59,10 @@ const NuevoCliente = () =>
         )}
         <Form
           method='post'
+          noValidate
         >
           <Formulario />
+
           <input 
             type="submit"
             className='mt-5 w-full bg-blue-800 uppercase font-bold text-white text-lg'

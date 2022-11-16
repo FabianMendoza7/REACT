@@ -99,20 +99,6 @@ const ControlBudget = ({
                     percentage: percentageSim
                 }
 
-                // setVehicleAmount(amountSim)
-                // setBasicFee(basicFeeSim)
-                // setSpecialFee(specialFeeSim)
-                // setAssociationFee(associationFeeSim)
-                // setStorageFee(storageFeeSim)
-                // setPercentage(percentageSim)
-
-                console.log("***********************************");
-                console.log("* vehicleAmountSim: ", vehicleAmountSim);
-                console.log("* lastVehicleAmountSim: ", lastVehicleAmountSim);
-                console.log("* final amount: ", amountSim);
-                console.log("* dataSimulator: ", dataSimulator);
-                console.log("***********************************");
-
                 return dataSimulator
             }
 

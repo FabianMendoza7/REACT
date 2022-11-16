@@ -36,25 +36,18 @@ const ControlBudget = ({
                 CalculateVehicleAmount(start3, end3, increment, 3)
             ]);
 
-            console.log("========> dataSimulator", dataSimulator);
-
-
             if(!dataSimulator){
                 // There is no data.
                 return
             }
 
             let result = dataSimulator.find(x => x.priority == 1);
-            console.log("========> result1", result);
 
             if(!result){
                 const minSum = Math.max(...dataSimulator.map(o => Object.keys(o).length > 0 && o.sum))
-                console.log("========> minSum", minSum);
                 result = dataSimulator.find(x => x.sum == minSum);
             }
 
-            console.log("========> result2", result);
-    
             setVehicleAmount(result.vehicleAmount ?? 0)
             setBasicFee(result.basicFee ?? 0)
             setSpecialFee(result.specialFee ?? 0)

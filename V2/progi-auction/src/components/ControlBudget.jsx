@@ -20,21 +20,20 @@ const ControlBudget = ({
 
     useEffect(() => {
         async function simulateAuction(){
-            console.log("> budget:",budget)
-            console.log("> config:",config)
             const increment = 0.01;
-            let start1 = budget < 120 ? increment : 1;
-            let end1 = parseFloat((budget / 3).toFixed(2));
-            let start2 = end1 + increment;
-            let end2 = parseFloat((end1 * 2).toFixed(2));
-            let start3 = end2 + increment;
-            let end3 = budget;
+            const lots = parseInt((budget <= 1000 ? 1 : budget / 1000) * 3)
+            let start = budget < 120 ? increment : 1
+            let end = parseInt(budget / lots)
+            let itemsLot = end
+            let promises = []
 
-            const dataSimulator = await Promise.all([
-                CalculateVehicleAmount(start1, end1, increment, 1), 
-                CalculateVehicleAmount(start2, end2, increment, 2),
-                CalculateVehicleAmount(start3, end3, increment, 3)
-            ]);
+            for(let lot = 1; lot <= lots; lot++){
+                promises.push(CalculateVehicleAmount(start, end, increment, lot))
+                start = end + increment;
+                end = lots == lot + 1 ? budget : end + itemsLot;
+            }
+
+            const dataSimulator = await Promise.all(promises);
 
             if(!dataSimulator){
                 // There is no data.

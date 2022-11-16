@@ -29,18 +29,30 @@ const ControlBudget = ({
             let start3 = end2 + increment;
             let end3 = budget;
 
-            await Promise.all([
-                CalculateVehicleAmount(start1, end1, increment, "A"), 
-                CalculateVehicleAmount(start2, end2, increment, "B"),
-                CalculateVehicleAmount(start3, end3, increment, "C")
+            const [dataSim1, dataSim2, dataSim3] = await Promise.all([
+                CalculateVehicleAmount(start1, end1, increment, 1), 
+                CalculateVehicleAmount(start2, end2, increment, 2),
+                CalculateVehicleAmount(start3, end3, increment, 3)
             ]);
-        }
-        simulateAuction();
+    
+            setVehicleAmount(dataSim1 ? dataSim1.vehicleAmount : (dataSim2 ? dataSim2.vehicleAmount : (dataSim3 ? dataSim3.vehicleAmount : 0)))
+            setBasicFee(dataSim1 ? dataSim1.basicFee : (dataSim2 ? dataSim2.basicFee : (dataSim3 ? dataSim3.basicFee : 0)))
+            setSpecialFee(dataSim1 ? dataSim1.specialFee : (dataSim2 ? dataSim2.specialFee : (dataSim3 ? dataSim3.specialFee : 0)))
+            setAssociationFee(dataSim1 ? dataSim1.associationFee : (dataSim2 ? dataSim2.associationFee : (dataSim3 ? dataSim3.associationFee : 0)))
+            setStorageFee(dataSim1 ? dataSim1.storageFee : (dataSim2 ? dataSim2.storageFee : (dataSim3 ? dataSim3.storageFee : 0)))
+            setPercentage(dataSim1 ? dataSim1.percentage : (dataSim2 ? dataSim2.percentage : (dataSim3 ? dataSim3.percentage : 0)))
 
-        //CalculateVehicleAmount(budget < 120 ? increment : 1, budget, 0.01);
+            // console.log("***********************************");
+            // console.log("* vehicleAmountSim: ", vehicleAmountSim);
+            // console.log("* lastVehicleAmountSim: ", lastVehicleAmountSim);
+            // console.log("* final amount: ", amountSim);
+            // console.log("***********************************");            
+        }
+
+        simulateAuction();
     }, [budget])
 
-    const CalculateVehicleAmount = async (vehicleAmountSim, end, increment, type) => {
+    const CalculateVehicleAmount = async (vehicleAmountSim, end, increment, priority) => {
         const {basicFeeRate, specialFeeRate, associationFeeObject, storageFee: storageFeeSim} = config
         let lastVehicleAmountSim = 0
 
@@ -50,27 +62,38 @@ const ControlBudget = ({
             const specialFeeSim = calculateSpecialFee(vehicleAmountSim, specialFeeRate)
             const associationFeeSim = calculateAssociationFee(vehicleAmountSim, associationFeeObject)
             const sum = parseFloat((vehicleAmountSim + basicFeeSim + specialFeeSim + associationFeeSim + storageFeeSim).toFixed(2))
-            console.log(`Sum-${type}:`, sum);
+            console.log(`Sum-${priority}:`, sum);
 
             if(sum >= budget && !found){
-                const amount = budget == sum ? vehicleAmountSim : lastVehicleAmountSim
-                const newPercentage = (((amount) / budget ) * 100).toFixed(2)
+                const amountSim = budget == sum ? vehicleAmountSim : lastVehicleAmountSim
+                const percentageSim = (((amountSim) / budget ) * 100).toFixed(2)
 
-                setVehicleAmount(amount)
-                setBasicFee(basicFeeSim)
-                setSpecialFee(specialFeeSim)
-                setAssociationFee(associationFeeSim)
-                setStorageFee(storageFeeSim)
-                setFound(true)
-                setPercentage(newPercentage)
+                const dataSimulator = {
+                    priority,
+                    vehicleAmount: amountSim,
+                    basicFee: basicFeeSim,
+                    specialFee: specialFeeSim,
+                    associationFee: associationFeeSim,
+                    storageFee: storageFeeSim,
+                    percentage: percentageSim
+                }
+
+                // setVehicleAmount(amountSim)
+                // setBasicFee(basicFeeSim)
+                // setSpecialFee(specialFeeSim)
+                // setAssociationFee(associationFeeSim)
+                // setStorageFee(storageFeeSim)
+                // setFound(true)
+                // setPercentage(percentageSim)
 
                 console.log("***********************************");
                 console.log("* vehicleAmountSim: ", vehicleAmountSim);
                 console.log("* lastVehicleAmountSim: ", lastVehicleAmountSim);
-                console.log("* final amount: ", amount);
+                console.log("* final amount: ", amountSim);
+                console.log("* dataSimulator: ", dataSimulator);
                 console.log("***********************************");
 
-                return
+                return dataSimulator
             }
 
             lastVehicleAmountSim = vehicleAmountSim

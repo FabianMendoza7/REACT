@@ -5,7 +5,8 @@ import {maxVehicleAmountConfig} from './../../config.js'
 const NewBudget = ({
   budget,
   setBudget,
-  setIsValidBudget
+  setIsValidBudget,
+  setLoading
 }) => {
   const [message, setMessage] = useState('');
 
@@ -23,13 +24,14 @@ const NewBudget = ({
       setIsValidBudget(false);
       return;
     }    
-
+    
+    setLoading(true);
     setMessage('');
     setIsValidBudget(true);
   }
 
   return (
-    <div className="contenedor-budget contenedor sombra">
+    <div className="contenedor-budget contenedor sombra">     
       <form onSubmit={handleBudget} className='formulario' noValidate>
         <div className="campo">
           <label>
@@ -47,19 +49,20 @@ const NewBudget = ({
           />
         </div>
 
-        <input 
+        <input
+          id="btnSimulate"
           type="submit"
           value="Simulate"
         />
-
+        
         {
           message && 
           <Message 
             type="error">
             {message}
           </Message>
-        }
-      </form>
+        }     
+      </form>        
     </div>
   )
 }

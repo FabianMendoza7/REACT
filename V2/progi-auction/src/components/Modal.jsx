@@ -7,8 +7,7 @@ const Modal = ({
     animateModal, 
     setAnimateModal, 
     configUpdate,
-    config,
-    setConfig
+    config
 }) => {
     console.log("config-app:",config);
     const [message, setMessage] = useState('')
@@ -25,17 +24,18 @@ const Modal = ({
 
     const handleSubmit = (e) => {
         e.preventDefault();
+        alert("Option not available at the moment.");
 
-        if([basicFeeRate, specialFeeRate, storageFee].includes('')){
-            setMessage('All fields are required');
+        // if([basicFeeRate, specialFeeRate, storageFee].includes('')){
+        //     setMessage('All fields are required');
 
-            setTimeout(() => {
-                setMessage('');
-            }, 3000);
-            return;
-        }
+        //     setTimeout(() => {
+        //         setMessage('');
+        //     }, 3000);
+        //     return;
+        // }
 
-        configUpdate({basicFeeRate, specialFeeRate, storageFee});
+        // configUpdate({basicFeeRate, specialFeeRate, storageFee});
     }
 
     return (

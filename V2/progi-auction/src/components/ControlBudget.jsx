@@ -8,7 +8,8 @@ const ControlBudget = ({
     setConfig,
     budget,
     setBudget,
-    setIsValidBudget
+    setIsValidBudget,
+    setLoading
 }) => {
     const [percentage, setPercentage] = useState(0)
     const [vehicleAmount, setVehicleAmount] = useState(0)
@@ -21,6 +22,7 @@ const ControlBudget = ({
     useEffect(() => {
         async function simulateAuction(){
             console.log("> budget:",budget)
+            console.log("> config:",config)
             const increment = 0.01;
             let start1 = budget < 120 ? increment : 1;
             let end1 = parseFloat((budget / 3).toFixed(2));
@@ -46,30 +48,43 @@ const ControlBudget = ({
             // console.log("* vehicleAmountSim: ", vehicleAmountSim);
             // console.log("* lastVehicleAmountSim: ", lastVehicleAmountSim);
             // console.log("* final amount: ", amountSim);
-            // console.log("***********************************");            
+            // console.log("***********************************"); 
+
+            //setLoading(false)
         }
 
         simulateAuction();
     }, [budget])
 
-    const CalculateVehicleAmount = async (vehicleAmountSim, end, increment, priority) => {
-        const {basicFeeRate, specialFeeRate, associationFeeObject, storageFee: storageFeeSim} = config
+    const CalculateVehicleAmount = async (vehicleAmountSim, end, increment, lot) => {
+        let {basicFeeRate, specialFeeRate, associationFeeObject, storageFee: storageFeeSim} = config
         let lastVehicleAmountSim = 0
 
         while(vehicleAmountSim <= end && !found){
-            const grossBasicFeeRate = vehicleAmountSim * (basicFeeRate / 100)
-            const basicFeeSim = calculateBasicFee(grossBasicFeeRate)
-            const specialFeeSim = calculateSpecialFee(vehicleAmountSim, specialFeeRate)
-            const associationFeeSim = calculateAssociationFee(vehicleAmountSim, associationFeeObject)
+            let basicFeeSim = calculateBasicFee(vehicleAmountSim, basicFeeRate)
+            let specialFeeSim = calculateSpecialFee(vehicleAmountSim, specialFeeRate)
+            let associationFeeSim = calculateAssociationFee(vehicleAmountSim, associationFeeObject)
             const sum = parseFloat((vehicleAmountSim + basicFeeSim + specialFeeSim + associationFeeSim + storageFeeSim).toFixed(2))
-            console.log(`Sum-${priority}:`, sum);
+            console.log(`Sum-${lot}:`, sum);
+            console.log(`vehicleAmountSim-${lot}:`, vehicleAmountSim);            
 
             if(sum >= budget && !found){
                 const amountSim = budget == sum ? vehicleAmountSim : lastVehicleAmountSim
                 const percentageSim = (((amountSim) / budget ) * 100).toFixed(2)
 
+                if(sum > budget){
+                    // Recalculate.
+                    basicFeeSim = calculateBasicFee(amountSim, basicFeeRate)
+                    specialFeeSim = calculateSpecialFee(amountSim, specialFeeRate)
+                    associationFeeSim = calculateAssociationFee(amountSim, associationFeeObject)
+                }
+
+                // TODO: validate this rule (?).
+                storageFeeSim = amountSim == 0 ? 0 : storageFeeSim
+
                 const dataSimulator = {
-                    priority,
+                    lot: lot,
+                    priority: sum == budget ? 1 : 2,
                     vehicleAmount: amountSim,
                     basicFee: basicFeeSim,
                     specialFee: specialFeeSim,
@@ -78,12 +93,13 @@ const ControlBudget = ({
                     percentage: percentageSim
                 }
 
+                setFound(true)
+
                 // setVehicleAmount(amountSim)
                 // setBasicFee(basicFeeSim)
                 // setSpecialFee(specialFeeSim)
                 // setAssociationFee(associationFeeSim)
                 // setStorageFee(storageFeeSim)
-                // setFound(true)
                 // setPercentage(percentageSim)
 
                 console.log("***********************************");
@@ -101,8 +117,9 @@ const ControlBudget = ({
         }
     }
 
-    const calculateBasicFee = (grossBasicFeeRate) => {
-        return parseFloat((grossBasicFeeRate < 10 ? 10 : (grossBasicFeeRate > 50 ? 50 : grossBasicFeeRate)).toFixed(2))
+    const calculateBasicFee = (vehicleAmount, basicFeeRate) => {
+        const grossBasicFeeRate = vehicleAmount * (basicFeeRate / 100)
+        return parseFloat((grossBasicFeeRate == 0 ? 0 : (grossBasicFeeRate < 10 ? 10 : (grossBasicFeeRate > 50 ? 50 : grossBasicFeeRate))).toFixed(2))
     }
 
     const calculateSpecialFee = (vehicleAmount, specialFeeRate) => {
@@ -114,7 +131,18 @@ const ControlBudget = ({
             return 0
         }
 
-        const fee = associationFeeObject.find(amount => vehicleAmount >= amount.minAmount && vehicleAmount <= amount.maxAmount).value
+        //const fee = associationFeeObject.find(amount => vehicleAmount >= amount.minAmount && vehicleAmount <= amount.maxAmount).value
+        let fee = 0
+        if(vehicleAmount >= 1 && vehicleAmount <= 500){
+            fee = 5
+        } else if(vehicleAmount > 500 && vehicleAmount <= 1000){
+            fee = 10
+        } else if(vehicleAmount > 1000 && vehicleAmount <= 3000){
+            fee = 15
+        } else {
+            fee = 20
+        }
+
         return parseFloat(fee.toFixed(2))
     }
 
@@ -162,7 +190,7 @@ const ControlBudget = ({
                     <span>Budget: </span> {formatAmount(budget)}
                 </p>
                 <p>
-                    <span>Maximum vehicle amount: </span> {formatAmount(vehicleAmount)}
+                    <span>Max vehicle amount: </span> {formatAmount(vehicleAmount)}
                 </p>                
                 <p>
                     <span>Basic fee: </span> {formatAmount(basicFee)}

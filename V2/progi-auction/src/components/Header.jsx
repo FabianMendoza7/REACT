@@ -1,4 +1,3 @@
-import React from 'react'
 import ControlBudget from './ControlBudget'
 import NewBudget from './NewBudget'
 
@@ -8,7 +7,8 @@ const Header = ({
   budget, 
   setBudget,
   isValidBudget,
-  setIsValidBudget
+  setIsValidBudget,
+  setLoading
 }) => {
   return (
     <header>
@@ -22,14 +22,17 @@ const Header = ({
               budget={budget}
               setBudget={setBudget}
               setIsValidBudget={setIsValidBudget}
+              setLoading={setLoading}
             />
           :
             <NewBudget 
               budget={budget}
               setBudget={setBudget}
               setIsValidBudget={setIsValidBudget}
+              setLoading={setLoading}
             />
         }
+
     </header>
   )
 }

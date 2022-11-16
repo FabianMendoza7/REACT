@@ -7,17 +7,17 @@ const feesConfig = {
         {
             value: 5,
             minAmount: 1,
-            maxAmount: 500.999999999999
+            maxAmount: 500
         },
         {
             value: 10,
             minAmount: 501,
-            maxAmount: 1000.999999999999
+            maxAmount: 1000
         },
         {
             value: 15,
             minAmount: 1001,
-            maxAmount: 3000.999999999999
+            maxAmount: 3000
         },
         {
             value: 20,

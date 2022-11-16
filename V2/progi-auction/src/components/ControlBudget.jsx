@@ -17,7 +17,6 @@ const ControlBudget = ({
     const [specialFee, setSpecialFee] = useState(0)
     const [associationFee, setAssociationFee] = useState(0)
     const [storageFee, setStorageFee] = useState(0)
-    const [found, setFound] = useState(false)
 
     useEffect(() => {
         async function simulateAuction(){
@@ -31,36 +30,48 @@ const ControlBudget = ({
             let start3 = end2 + increment;
             let end3 = budget;
 
-            const [dataSim1, dataSim2, dataSim3] = await Promise.all([
+            const dataSimulator = await Promise.all([
                 CalculateVehicleAmount(start1, end1, increment, 1), 
                 CalculateVehicleAmount(start2, end2, increment, 2),
                 CalculateVehicleAmount(start3, end3, increment, 3)
             ]);
+
+            console.log("========> dataSimulator", dataSimulator);
+
+
+            if(!dataSimulator){
+                // There is no data.
+                return
+            }
+
+            let result = dataSimulator.find(x => x.priority == 1);
+            console.log("========> result1", result);
+
+            if(!result){
+                const minSum = Math.max(...dataSimulator.map(o => Object.keys(o).length > 0 && o.sum))
+                console.log("========> minSum", minSum);
+                result = dataSimulator.find(x => x.sum == minSum);
+            }
+
+            console.log("========> result2", result);
     
-            setVehicleAmount(dataSim1 ? dataSim1.vehicleAmount : (dataSim2 ? dataSim2.vehicleAmount : (dataSim3 ? dataSim3.vehicleAmount : 0)))
-            setBasicFee(dataSim1 ? dataSim1.basicFee : (dataSim2 ? dataSim2.basicFee : (dataSim3 ? dataSim3.basicFee : 0)))
-            setSpecialFee(dataSim1 ? dataSim1.specialFee : (dataSim2 ? dataSim2.specialFee : (dataSim3 ? dataSim3.specialFee : 0)))
-            setAssociationFee(dataSim1 ? dataSim1.associationFee : (dataSim2 ? dataSim2.associationFee : (dataSim3 ? dataSim3.associationFee : 0)))
-            setStorageFee(dataSim1 ? dataSim1.storageFee : (dataSim2 ? dataSim2.storageFee : (dataSim3 ? dataSim3.storageFee : 0)))
-            setPercentage(dataSim1 ? dataSim1.percentage : (dataSim2 ? dataSim2.percentage : (dataSim3 ? dataSim3.percentage : 0)))
-
-            // console.log("***********************************");
-            // console.log("* vehicleAmountSim: ", vehicleAmountSim);
-            // console.log("* lastVehicleAmountSim: ", lastVehicleAmountSim);
-            // console.log("* final amount: ", amountSim);
-            // console.log("***********************************"); 
-
-            //setLoading(false)
+            setVehicleAmount(result.vehicleAmount ?? 0)
+            setBasicFee(result.basicFee ?? 0)
+            setSpecialFee(result.specialFee ?? 0)
+            setAssociationFee(result.associationFee ?? 0)
+            setStorageFee(result.storageFee ?? 0)
+            setPercentage(result.percentage ?? 0)
         }
 
         simulateAuction();
     }, [budget])
 
-    const CalculateVehicleAmount = async (vehicleAmountSim, end, increment, lot) => {
+    const CalculateVehicleAmount = async (start, end, increment, lot) => {
         let {basicFeeRate, specialFeeRate, associationFeeObject, storageFee: storageFeeSim} = config
+        let vehicleAmountSim = start
         let lastVehicleAmountSim = 0
 
-        while(vehicleAmountSim <= end && !found){
+        while(vehicleAmountSim <= end){
             let basicFeeSim = calculateBasicFee(vehicleAmountSim, basicFeeRate)
             let specialFeeSim = calculateSpecialFee(vehicleAmountSim, specialFeeRate)
             let associationFeeSim = calculateAssociationFee(vehicleAmountSim, associationFeeObject)
@@ -68,7 +79,7 @@ const ControlBudget = ({
             console.log(`Sum-${lot}:`, sum);
             console.log(`vehicleAmountSim-${lot}:`, vehicleAmountSim);            
 
-            if(sum >= budget && !found){
+            if(sum >= budget){
                 const amountSim = budget == sum ? vehicleAmountSim : lastVehicleAmountSim
                 const percentageSim = (((amountSim) / budget ) * 100).toFixed(2)
 
@@ -83,7 +94,10 @@ const ControlBudget = ({
                 storageFeeSim = amountSim == 0 ? 0 : storageFeeSim
 
                 const dataSimulator = {
-                    lot: lot,
+                    lot,
+                    start, 
+                    end,
+                    sum,
                     priority: sum == budget ? 1 : 2,
                     vehicleAmount: amountSim,
                     basicFee: basicFeeSim,
@@ -92,8 +106,6 @@ const ControlBudget = ({
                     storageFee: storageFeeSim,
                     percentage: percentageSim
                 }
-
-                setFound(true)
 
                 // setVehicleAmount(amountSim)
                 // setBasicFee(basicFeeSim)
@@ -115,6 +127,7 @@ const ControlBudget = ({
             lastVehicleAmountSim = vehicleAmountSim
             vehicleAmountSim = parseFloat((vehicleAmountSim + increment).toFixed(2))
         }
+        return {}
     }
 
     const calculateBasicFee = (vehicleAmount, basicFeeRate) => {
@@ -160,7 +173,6 @@ const ControlBudget = ({
             setConfig(feesConfig)
             setBudget(0)
             setIsValidBudget(false)
-            setFound(false)
         }
     }
 

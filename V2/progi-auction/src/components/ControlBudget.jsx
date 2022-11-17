@@ -120,6 +120,7 @@ const ControlBudget = ({
             return 0
         }
 
+        //TODO: Review this functionality:
         //const fee = associationFeeObject.find(amount => vehicleAmount >= amount.minAmount && vehicleAmount <= amount.maxAmount).value
         let fee = 0
         if(vehicleAmount >= 1 && vehicleAmount <= 500){

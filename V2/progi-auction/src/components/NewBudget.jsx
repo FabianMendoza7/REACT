@@ -9,6 +9,7 @@ const NewBudget = ({
   setLoading
 }) => {
   const [message, setMessage] = useState('');
+  const [buttonText, setButtonText] = useState("Simulate");
 
   const handleBudget = (e) =>{
     e.preventDefault();
@@ -23,7 +24,13 @@ const NewBudget = ({
       setMessage(`the budget must not exceed ${maxVehicleAmountConfig}`);
       setIsValidBudget(false);
       return;
-    }    
+    }
+    
+    if(budget >= 25000){
+      if(!confirm("With this amount, it could take considerable time. Do you want to continue and wait for the calculation to finish?")){
+        return;
+      }
+    }
     
     setLoading(true);
     setMessage('');
@@ -49,12 +56,20 @@ const NewBudget = ({
           />
         </div>
 
-        <input
+        {/* <input
           id="btnSimulate"
           type="submit"
-          value="Simulate"
-        />
-        
+          value={buttonText}
+        /> */}
+        <button
+          className='reset-app'
+          type="submit"
+          onClick={() => {
+            //TODO: review: setButtonText("Calculating, wait please...")
+          }}
+        >
+          {buttonText}
+        </button>        
         {
           message && 
           <Message 

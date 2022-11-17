@@ -68,8 +68,6 @@ const ControlBudget = ({
             let specialFeeSim = calculateSpecialFee(vehicleAmountSim, specialFeeRate)
             let associationFeeSim = calculateAssociationFee(vehicleAmountSim, associationFeeObject)
             const sum = parseFloat((vehicleAmountSim + basicFeeSim + specialFeeSim + associationFeeSim + storageFeeSim).toFixed(2))
-            console.log(`Sum-${lot}:`, sum);
-            console.log(`vehicleAmountSim-${lot}:`, vehicleAmountSim);            
 
             if(sum >= budget){
                 const amountSim = budget == sum ? vehicleAmountSim : lastVehicleAmountSim

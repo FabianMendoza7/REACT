@@ -176,7 +176,7 @@ const ControlBudget = ({
                     Reset Simulator
                 </button>
                 <p>
-                    <span>Budget: </span> {formatAmount(budget)}
+                    <span>Budget: </span> {formatAmount(Number(budget))}
                 </p>
                 <p>
                     <span>Max vehicle amount: </span> {formatAmount(vehicleAmount)}

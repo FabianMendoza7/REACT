@@ -45,7 +45,7 @@ const NewBudget = ({
             max={maxVehicleAmountConfig}            
             placeholder="Enter your Budget"
             value={budget}
-            onChange={e => setBudget(Number(e.target.value))}
+            onChange={e => setBudget(e.target.value)}
           />
         </div>
 

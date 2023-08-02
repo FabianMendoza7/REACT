@@ -1,4 +1,3 @@
-import { useEffect } from 'react';
 import Paciente from "./Paciente";
 
 const ListadoPacientes = ({ pacientes, setPaciente, eliminarPaciente }) =>

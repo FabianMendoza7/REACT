@@ -32,7 +32,9 @@ const useSelectMonedas = (label, opciones) => {
                     <option
                         key={opcion.id}
                         value={opcion.id}
-                    >{opcion.nombre}</option>  
+                    >
+                        {opcion.nombre}
+                    </option>  
                 ))}
             </Select>
         </>

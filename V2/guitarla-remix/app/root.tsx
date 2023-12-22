@@ -5,9 +5,10 @@ import {
     Scripts,
     LiveReload
 } from "@remix-run/react";
-import styles from './styles/index.css';
+import globalStyles from './styles/index.css';
 import Header from "./components/header";
 import Footer from './components/footer';
+import nosotrosStyles from './styles/nosotros.css';
 
 export function meta(){
     return [
@@ -27,8 +28,12 @@ export function links(){
         },
         {
             rel: 'stylesheet',
-            href: styles
+            href: globalStyles
         },
+        {
+            rel: 'stylesheet',
+            href: nosotrosStyles
+        },        
         {
             rel: 'preconnect',
             href: 'https://fonts.googleapis.com'
